@@ -1,0 +1,19 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.ts-build/
+frontend/*.tsbuildinfo
+
+## Diversos
+Teste_Tecnico-Desenvolvedor-Btsa.pdf
+*.log
+.env
+.env.local

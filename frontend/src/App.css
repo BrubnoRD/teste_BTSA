@@ -1,0 +1,178 @@
+.aplicacao {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+header h1 {
+  margin-bottom: 4px;
+}
+
+header p {
+  color: var(--suave);
+  margin-top: 0;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.cartao {
+  background: var(--fundo-cartao);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cartao h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.linha {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.linha input {
+  flex: 1;
+}
+
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pilha label,
+.linha label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--suave);
+}
+
+.caixa-selecao {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+}
+
+input,
+button {
+  font: inherit;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+input:not([type]) {
+  padding: 8px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+}
+
+button {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--destaque);
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button.perigo {
+  background: var(--perigo);
+  margin-top: 12px;
+}
+
+details {
+  margin-bottom: 16px;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--destaque);
+  margin-bottom: 8px;
+}
+
+.detalhes {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.detalhes dt {
+  color: var(--suave);
+}
+
+.detalhes dd {
+  margin: 0;
+  word-break: break-all;
+}
+
+.erro {
+  color: var(--perigo);
+  font-size: 0.9rem;
+}
+
+.resultado {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eef1f5;
+  font-size: 0.9rem;
+}
+
+.resultado-concluida {
+  background: #e6f6ec;
+}
+
+.resultado-falhou {
+  background: #fbeceb;
+}
+
+.resultado-agendada {
+  background: #eaf1fd;
+}
+
+.etiqueta {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #e5e7eb;
+}
+
+.etiqueta-ativa,
+.etiqueta-concluida {
+  background: #e6f6ec;
+  color: var(--sucesso);
+}
+
+.etiqueta-bloqueada,
+.etiqueta-falhou,
+.etiqueta-cancelada {
+  background: #fbeceb;
+  color: var(--perigo);
+}
+
+.etiqueta-agendada,
+.etiqueta-processando {
+  background: #eaf1fd;
+  color: var(--destaque);
+}

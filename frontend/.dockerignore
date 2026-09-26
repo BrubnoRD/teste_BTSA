@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.ts-build/
+.vite/
+.vscode/
+*.tsbuildinfo
+*.esproj
+*.esproj.user
+.env
+.env.local
+Dockerfile
+.dockerignore

@@ -1,0 +1,53 @@
+# Sobe a solução completa: banco (PostgreSQL 16), API (.NET 8) e tela (React servida pelo nginx).
+# Subir:  docker compose up -d --build
+# Portas no host:
+#   API + Swagger -> http://localhost:5080/swagger
+#   Tela          -> http://localhost:5173
+#   PostgreSQL    -> localhost:5433 (usuário transferencias / senha 424659)
+# As credenciais abaixo são apenas para desenvolvimento local.
+services:
+  db:
+    image: postgres:16
+    container_name: transferencias-financeiras-postgres
+    environment:
+      POSTGRES_DB: transferencias_financeiras
+      POSTGRES_USER: transferencias
+      POSTGRES_PASSWORD: "424659"
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transferencias -d transferencias_financeiras"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build: ./src/TransferenciasFinanceiras.Api
+    container_name: transferencias-financeiras-api
+    environment:
+      # Dentro da rede do Docker o banco é acessado pelo nome do serviço, na porta interna.
+      ConnectionStrings__Padrao: "Host=db;Port=5432;Database=transferencias_financeiras;Username=transferencias;Password=424659"
+    ports:
+      - "5080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_URL_API: http://localhost:5080
+    container_name: transferencias-financeiras-tela
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  pg_data:

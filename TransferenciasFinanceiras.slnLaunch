@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "src + Frontend",
+    "Projects": [
+      {
+        "Path": "src\\TransferenciasFinanceiras.Api\\TransferenciasFinanceiras.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "frontend\\frontend.esproj",
+        "Action": "Start",
+        "DebugTarget": "localhost (Chrome)"
+      }
+    ]
+  }
+]

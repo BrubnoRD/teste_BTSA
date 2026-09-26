@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.6778455">
+  <PropertyGroup>
+    <!-- Comando executado pelo Visual Studio ao dar F5 / Start neste projeto -->
+    <StartupCommand>npm run dev</StartupCommand>
+    <!-- O build do VS não roda "npm run build" (tsc + vite build); só o npm install -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+  </PropertyGroup>
+</Project>
