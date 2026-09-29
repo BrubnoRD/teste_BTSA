@@ -12,6 +12,5 @@ public interface ITransferenciaServico
 
     Task<TransferenciaResposta> ObterAsync(Guid idTransferencia, CancellationToken ct = default);
 
-    /// <summary>Chamado pelo processador de agendamentos (ver HostedService/ProcessadorTransferenciasAgendadas) quando o horário do agendamento chega.</summary>
     Task ExecutarAgendadaAsync(Guid idTransferencia, CancellationToken ct = default);
 }

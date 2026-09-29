@@ -20,9 +20,6 @@ public class TransferenciaRepositorio(DataContext db) : ITransferenciaRepositori
     {
         var inicioJanela = agora.AddHours(-1);
 
-        // Conta apenas tentativas que chegaram a ser processadas (sucesso ou falha).
-        // Agendamentos ainda pendentes (Scheduled) e cancelamentos (Cancelled) não
-        // representam uma tentativa real de mover dinheiro.
         return db.Transferencias.CountAsync(
             t => t.IdContaOrigem == idContaOrigem
                  && (t.Status == StatusTransferencia.Completed || t.Status == StatusTransferencia.Failed)
@@ -36,8 +33,6 @@ public class TransferenciaRepositorio(DataContext db) : ITransferenciaRepositori
     {
         var inicioJanela = agora.AddHours(-1);
 
-        // Só transferências efetivamente concluídas consomem o limite de valor/hora;
-        // tentativas com falha não moveram dinheiro algum.
         return db.Transferencias
             .Where(t => t.IdContaOrigem == idContaOrigem
                         && t.Status == StatusTransferencia.Completed

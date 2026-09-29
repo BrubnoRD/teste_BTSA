@@ -8,7 +8,6 @@ namespace TransferenciasFinanceiras.Api.Controllers;
 [Route("api/accounts")]
 public class ContasController(IContaServico contaServico) : ControllerBase
 {
-    /// Consulta saldo, cheque especial, status e limites de uma conta (regra 2).
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ContaResposta), StatusCodes.Status200OK)]
     public async Task<ActionResult<ContaResposta>> ObterPorId(Guid id, CancellationToken ct)
@@ -17,8 +16,6 @@ public class ContasController(IContaServico contaServico) : ControllerBase
         return Ok(resultado);
     }
 
-    /// Rota auxiliar (não está na lista sugerida pelo enunciado) só para permitir
-    /// criar contas de teste pelo Swagger ou pela tela, sem precisar inserir direto no banco.
     [HttpPost]
     [ProducesResponseType(typeof(ContaResposta), StatusCodes.Status201Created)]
     public async Task<ActionResult<ContaResposta>> Criar([FromBody] CriarContaRequisicao requisicao, CancellationToken ct)

@@ -1,8 +1,5 @@
 namespace TransferenciasFinanceiras.Api.Model;
 
-/// <summary>
-/// Base para entidades com identidade própria (raiz de agregado ou não).
-/// </summary>
 public abstract class Entidade
 {
     public Guid Id { get; protected set; }

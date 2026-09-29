@@ -16,8 +16,6 @@ public sealed class TransferenciaServico(
     {
         var agora = relogio.AgoraUtc;
 
-        // Erros de forma (mesma conta / valor <= 0) são recusados antes de qualquer
-        // persistência: não existe "tentativa" sem um par de contas coerente (regra 3).
         var transferencia = Transferencia.CriarImediata(requisicao.IdContaOrigem, requisicao.IdContaDestino, requisicao.Valor, agora);
 
         return await unidadeDeTrabalho.ExecutarEmTransacaoAsync(async token =>
@@ -37,9 +35,6 @@ public sealed class TransferenciaServico(
     {
         var agora = relogio.AgoraUtc;
 
-        // O PostgreSQL (timestamp with time zone) só aceita DateTime em UTC. Data sem fuso
-        // informado é tratada como UTC, igual às demais datas do sistema.
-        // AgendadaPara é [Required] no DTO; nulo aqui só se a validação da API for contornada.
         var agendadaParaInformada = requisicao.AgendadaPara ?? throw new DataAgendamentoInvalidaExcecao();
         var agendadaPara = agendadaParaInformada.Kind == DateTimeKind.Unspecified
             ? DateTime.SpecifyKind(agendadaParaInformada, DateTimeKind.Utc)
@@ -47,8 +42,6 @@ public sealed class TransferenciaServico(
 
         var transferencia = Transferencia.CriarAgendada(requisicao.IdContaOrigem, requisicao.IdContaDestino, requisicao.Valor, agendadaPara, agora);
 
-        // Não há necessidade de bloqueio aqui: nenhum saldo é movimentado no agendamento,
-        // só confirmamos que as contas existem. Tudo será revalidado na execução (regra 6).
         _ = await contas.ObterPorIdAsync(requisicao.IdContaOrigem, ct) ?? throw new ContaNaoEncontradaExcecao(requisicao.IdContaOrigem);
         _ = await contas.ObterPorIdAsync(requisicao.IdContaDestino, ct) ?? throw new ContaNaoEncontradaExcecao(requisicao.IdContaDestino);
 
@@ -61,8 +54,6 @@ public sealed class TransferenciaServico(
     public Task<TransferenciaResposta> CancelarAsync(Guid idTransferencia, CancellationToken ct = default) =>
         unidadeDeTrabalho.ExecutarEmTransacaoAsync(async token =>
         {
-            // Mesmo bloqueio usado em ExecutarAgendadaAsync: se o processador estiver executando
-            // este agendamento agora, o cancelamento espera e então vê o status já atualizado.
             var transferencia = await transferencias.ObterParaAtualizacaoAsync(idTransferencia, token) ?? throw new TransferenciaNaoEncontradaExcecao(idTransferencia);
 
             transferencia.Cancelar();
@@ -80,13 +71,10 @@ public sealed class TransferenciaServico(
     public Task ExecutarAgendadaAsync(Guid idTransferencia, CancellationToken ct = default) =>
         unidadeDeTrabalho.ExecutarEmTransacaoAsync(async token =>
         {
-            // Transferência travada antes das contas; o cancelamento só trava a transferência
-            // e a transferência imediata só as contas, então não há ordem cruzada (impasse).
             var transferencia = await transferencias.ObterParaAtualizacaoAsync(idTransferencia, token) ?? throw new TransferenciaNaoEncontradaExcecao(idTransferencia);
 
             if (transferencia.Status != StatusTransferencia.Scheduled)
             {
-                // Já foi cancelada ou processada (execução duplicada do processador) — nada a fazer.
                 return true;
             }
 
@@ -100,10 +88,6 @@ public sealed class TransferenciaServico(
             return true;
         }, ct);
 
-    /// Núcleo das regras 3, 4 e 5. Compartilhado entre transferência imediata e a
-    /// execução de uma transferência agendada, para que as duas validem exatamente
-    /// as mesmas coisas (contas ativas, limite/tentativas por hora, saldo + cheque
-    /// especial) antes de debitar/creditar de forma atômica.
     private async Task AplicarRegrasTransferenciaAsync(Transferencia transferencia, Conta contaOrigem, Conta contaDestino, DateTime agora, CancellationToken ct)
     {
         var motivoRejeicao = ValidarContasAtivas(contaOrigem, contaDestino)
@@ -162,12 +146,6 @@ public sealed class TransferenciaServico(
         return null;
     }
 
-    /// Carrega as duas contas com bloqueio pessimista (SELECT ... FOR UPDATE) sempre na
-    /// mesma ordem — pelo Guid, não por origem/destino — para que duas transferências
-    /// concorrentes envolvendo o mesmo par de contas nunca se travem mutuamente
-    /// (impasse). Isso também serializa transferências concorrentes que compartilham
-    /// a mesma conta de origem, o que é o que garante a correção do cenário "duas
-    /// transferências simultâneas utilizando o mesmo saldo".
     private async Task<(Conta ContaOrigem, Conta ContaDestino)> CarregarContasParaAtualizacaoOrdenadasAsync(Guid idContaOrigem, Guid idContaDestino, CancellationToken ct)
     {
         var (primeiroId, segundoId) = idContaOrigem.CompareTo(idContaDestino) < 0

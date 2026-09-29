@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TransferenciasFinanceiras.Api.Migrations
 {
-    /// <inheritdoc />
     public partial class CriacaoInicial : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -71,7 +69,6 @@ namespace TransferenciasFinanceiras.Api.Migrations
                 columns: new[] { "Status", "AgendadaPara" });
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

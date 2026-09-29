@@ -1,9 +1,5 @@
 namespace TransferenciasFinanceiras.Api.Model.Excecoes;
 
-/// <summary>
-/// Base para toda violação de regra de negócio. A API mapeia o tipo concreto
-/// para um status HTTP e um código de erro estável (ver Help/TratamentoExcecoesMiddleware).
-/// </summary>
 public abstract class ExcecaoDominio : Exception
 {
     protected ExcecaoDominio(string codigoErro, string mensagem) : base(mensagem)

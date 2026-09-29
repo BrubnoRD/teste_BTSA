@@ -5,7 +5,6 @@ using TransferenciasFinanceiras.Api.Service;
 
 namespace TransferenciasFinanceiras.Testes.Fakes;
 
-/// <summary>Relógio controlado pelo teste — permite fixar dia/noite e avançar a janela de 1 hora.</summary>
 public sealed class RelogioFixo(DateTime agoraUtc) : IProvedorDataHora
 {
     public DateTime AgoraUtc { get; private set; } = DateTime.SpecifyKind(agoraUtc, DateTimeKind.Utc);
@@ -25,7 +24,6 @@ public sealed class ContaRepositorioEmMemoria : IContaRepositorio
     public void Adicionar(Conta conta) => _contas[conta.Id] = conta;
 }
 
-/// <summary>Reproduz em memória as mesmas consultas do TransferenciaRepositorio (EF).</summary>
 public sealed class TransferenciaRepositorioEmMemoria : ITransferenciaRepositorio
 {
     private readonly List<Transferencia> _transferencias = [];

@@ -20,9 +20,6 @@ async function requisitar<T>(caminho: string, opcoes?: RequestInit): Promise<T> 
   const texto = await resposta.text();
   const dados = texto ? JSON.parse(texto) : undefined;
 
-  // 422 é usado pela API para devolver uma transferência com status "Failed"
-  // (a rejeição em si é um resultado válido, não um erro de comunicação),
-  // então só tratamos como erro de fato os demais status de falha.
   if (!resposta.ok && resposta.status !== 422) {
     const problema = dados as DetalhesProblema | undefined;
     throw new ErroApi(resposta.status, problema?.detail ?? problema?.title ?? `Erro inesperado (HTTP ${resposta.status}).`);

@@ -3,10 +3,6 @@ using TransferenciasFinanceiras.Api.Model.Excecoes;
 
 namespace TransferenciasFinanceiras.Api.Model;
 
-/// <summary>
-/// Raiz de agregado. Cada conta pertence a uma pessoa e concentra toda regra de
-/// saldo, cheque especial e limites de transferência por hora (regras 2, 3, 4 e 5).
-/// </summary>
 public class Conta : Entidade
 {
     public string NomeTitular { get; private set; } = string.Empty;
@@ -14,7 +10,6 @@ public class Conta : Entidade
     public decimal LimiteChequeEspecial { get; private set; }
     public StatusConta Status { get; private set; }
 
-    // Limite de transferência por hora, configurável por período (regra 5).
     public decimal LimiteTransferenciaDiurno { get; private set; }
     public int MaxTentativasPorHoraDiurno { get; private set; }
     public decimal LimiteTransferenciaNoturno { get; private set; }
@@ -22,7 +17,7 @@ public class Conta : Entidade
 
     public DateTime CriadaEm { get; private set; }
 
-    private Conta() { } // exigido pelo EF Core
+    private Conta() { }
 
     private Conta(
         Guid id,
@@ -98,7 +93,6 @@ public class Conta : Entidade
 
     public bool EstaAtiva => Status == StatusConta.Ativa;
 
-    /// <summary>Saldo + cheque especial disponível para saque/transferência.</summary>
     public decimal SaldoDisponivel => Saldo + LimiteChequeEspecial;
 
     public void GarantirQuePodeMovimentar()
@@ -109,10 +103,6 @@ public class Conta : Entidade
         }
     }
 
-    /// <summary>
-    /// Débito da conta de origem. Pode deixar o saldo negativo, respeitando o
-    /// cheque especial (regra 4). Lança se não houver saldo + limite suficiente.
-    /// </summary>
     public void Debitar(decimal valor)
     {
         GarantirQuePodeMovimentar();
@@ -125,11 +115,6 @@ public class Conta : Entidade
         Saldo -= valor;
     }
 
-    /// <summary>
-    /// Crédito na conta de destino. A simples soma já cobre primeiro o cheque
-    /// especial utilizado antes de compor saldo positivo (ex.: -800 + 1000 = 200),
-    /// então nenhuma lógica adicional de "quitação" é necessária aqui.
-    /// </summary>
     public void Creditar(decimal valor)
     {
         GarantirQuePodeMovimentar();

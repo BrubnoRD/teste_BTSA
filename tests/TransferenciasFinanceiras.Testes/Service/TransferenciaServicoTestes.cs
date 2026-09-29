@@ -9,7 +9,6 @@ namespace TransferenciasFinanceiras.Testes.Service;
 
 public class TransferenciaServicoTestes
 {
-    // 15:00 UTC = 12:00 em Brasília (período "Dia"); 02:00 UTC = 23:00 em Brasília ("Noite").
     private static readonly DateTime MeioDiaBrasilia = new(2026, 9, 26, 15, 0, 0, DateTimeKind.Utc);
     private static readonly DateTime OnzeDaNoiteBrasilia = new(2026, 9, 27, 2, 0, 0, DateTimeKind.Utc);
 
@@ -95,8 +94,8 @@ public class TransferenciaServicoTestes
         var origem = NovaConta(saldo: 10m, tentativasDiurno: 2);
         var destino = NovaConta();
 
-        await Transferir(origem, destino, 1_000m); // rejeitada por saldo — conta como tentativa
-        await Transferir(origem, destino, 5m);     // concluída
+        await Transferir(origem, destino, 1_000m);
+        await Transferir(origem, destino, 5m);
         var terceira = await Transferir(origem, destino, 1m);
 
         Assert.Equal(StatusTransferencia.Failed, terceira.Status);
@@ -158,7 +157,7 @@ public class TransferenciaServicoTestes
         var destino = NovaConta();
         var agendada = await _servico.AgendarAsync(new AgendarTransferenciaRequisicao(origem.Id, destino.Id, 100m, MeioDiaBrasilia.AddHours(2)));
 
-        await Transferir(origem, destino, 100m); // esvazia a conta antes do agendamento vencer
+        await Transferir(origem, destino, 100m);
         _relogio.Avancar(TimeSpan.FromHours(2));
         await _servico.ExecutarAgendadaAsync(agendada.Id);
 

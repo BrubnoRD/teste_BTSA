@@ -3,11 +3,6 @@ using TransferenciasFinanceiras.Api.Model.Excecoes;
 
 namespace TransferenciasFinanceiras.Api.Model;
 
-/// <summary>
-/// Representa uma transferência imediata ou agendada e seu ciclo de vida (regras 1, 6 e 7).
-/// Toda tentativa — inclusive as rejeitadas — vira um registro aqui, pois elas contam
-/// para o limite de tentativas por hora (regra 5).
-/// </summary>
 public class Transferencia : Entidade
 {
     public Guid IdContaOrigem { get; private set; }
@@ -15,14 +10,13 @@ public class Transferencia : Entidade
     public decimal Valor { get; private set; }
     public StatusTransferencia Status { get; private set; }
 
-    /// <summary>Nulo para transferências imediatas. Preenchido para agendamentos.</summary>
     public DateTime? AgendadaPara { get; private set; }
 
     public DateTime CriadaEm { get; private set; }
     public DateTime? ProcessadaEm { get; private set; }
     public string? MotivoFalha { get; private set; }
 
-    private Transferencia() { } // exigido pelo EF Core
+    private Transferencia() { }
 
     private Transferencia(
         Guid id,
@@ -96,7 +90,6 @@ public class Transferencia : Entidade
         MotivoFalha = motivo;
     }
 
-    /// <summary>Cancelamento só é permitido enquanto a transferência estiver agendada (regra 1 e 6).</summary>
     public void Cancelar()
     {
         if (Status != StatusTransferencia.Scheduled)

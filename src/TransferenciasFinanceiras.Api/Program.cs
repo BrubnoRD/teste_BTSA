@@ -11,9 +11,6 @@ construtor.Services.AddControllers()
     .AddJsonOptions(opcoes => opcoes.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
     .ConfigureApiBehaviorOptions(opcoes =>
     {
-        // Requisição inválida (atributos dos DTOs ou JSON malformado) segue o mesmo formato
-        // dos erros de domínio: código estável em "title" e mensagem legível em "detail"
-        // (é o campo que a tela exibe); o detalhamento por campo continua em "errors".
         opcoes.InvalidModelStateResponseFactory = contexto =>
         {
             var problema = new ValidationProblemDetails(contexto.ModelState)
@@ -57,8 +54,6 @@ aplicacao.UseMiddleware<TratamentoExcecoesMiddleware>();
 aplicacao.UseCors(PoliticaCorsTela);
 aplicacao.MapControllers();
 
-// Aplica as migrações pendentes automaticamente ao iniciar — simplifica o "clonar e rodar"
-// pedido no README de entrega, sem precisar de um passo manual de `dotnet ef database update`.
 using (var escopo = aplicacao.Services.CreateScope())
 {
     var db = escopo.ServiceProvider.GetRequiredService<DataContext>();
@@ -67,5 +62,4 @@ using (var escopo = aplicacao.Services.CreateScope())
 
 aplicacao.Run();
 
-// Torna a classe visível para um futuro projeto de testes de integração (WebApplicationFactory<Program>).
 public partial class Program;

@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TransferenciasFinanceiras.Api.Help;
 
-/// <summary>
-/// Converte exceções de domínio em respostas de problema (ProblemDetails) com o status HTTP
-/// correspondente, para os controladores não precisarem repetir o tratamento de erro em cada ação.
-/// </summary>
 public class TratamentoExcecoesMiddleware(RequestDelegate proximo, ILogger<TratamentoExcecoesMiddleware> log)
 {
     public async Task InvokeAsync(HttpContext contexto)

@@ -15,7 +15,6 @@ namespace TransferenciasFinanceiras.Api.Migrations
     [Migration("20260926141738_CriacaoInicial")]
     partial class CriacaoInicial
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

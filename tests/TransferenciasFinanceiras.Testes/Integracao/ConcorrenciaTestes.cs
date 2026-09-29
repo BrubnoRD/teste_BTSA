@@ -37,7 +37,6 @@ public class ConcorrenciaTestes(PostgresFixture banco) : IClassFixture<PostgresF
         var relogio = PostgresFixture.RelogioMeioDiaBrasilia();
         using var largada = new SemaphoreSlim(0);
 
-        // 10 "requisições" de R$ 30 disputando R$ 100: sem o bloqueio, várias leriam saldo 100 ao mesmo tempo.
         var tarefas = Enumerable.Range(0, 10).Select(_ => Task.Run(async () =>
         {
             var (servico, db) = banco.CriarServico(relogio);
@@ -64,7 +63,6 @@ public class ConcorrenciaTestes(PostgresFixture banco) : IClassFixture<PostgresF
         var contaB = await CriarContaAsync(saldo: 1_000m);
         var relogio = PostgresFixture.RelogioMeioDiaBrasilia();
 
-        // A→B e B→A ao mesmo tempo: se cada uma travasse "origem primeiro", uma esperaria a outra para sempre.
         var tarefas = Enumerable.Range(0, 20).Select(i => Task.Run(async () =>
         {
             var (servico, db) = banco.CriarServico(relogio);
@@ -97,7 +95,6 @@ public class ConcorrenciaTestes(PostgresFixture banco) : IClassFixture<PostgresF
             idAgendada = agendada.Id;
         }
 
-        // Simula o processador no meio da execução: transação aberta com a transferência travada.
         await using var dbProcessador = banco.CriarContexto();
         await using var transacaoProcessador = await dbProcessador.Database.BeginTransactionAsync();
         var emExecucao = await new TransferenciaRepositorio(dbProcessador).ObterParaAtualizacaoAsync(idAgendada);

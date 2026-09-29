@@ -3,7 +3,6 @@ using TransferenciasFinanceiras.Api.Model;
 
 namespace TransferenciasFinanceiras.Api.Dto.Validacao;
 
-/// <summary>Rejeita Guid.Empty — o que chega quando o campo é omitido no JSON ou enviado como "0000...".</summary>
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
 public sealed class GuidNaoVazioAttribute : ValidationAttribute
 {
@@ -13,11 +12,6 @@ public sealed class GuidNaoVazioAttribute : ValidationAttribute
             : ValidationResult.Success;
 }
 
-/// <summary>
-/// Valor em reais: no máximo 2 casas decimais (as colunas são numeric(18,2) — sem isso,
-/// R$ 0,001 passaria como "maior que zero" e seria gravado como R$ 0,00) e dentro do
-/// que a coluna comporta. Nulo é aceito, para campos opcionais.
-/// </summary>
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property)]
 public sealed class ValorMonetarioAttribute(bool permitirZero = false) : ValidationAttribute
 {
