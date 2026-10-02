@@ -29,7 +29,8 @@ services:
     container_name: transferencias-financeiras-api
     environment:
       # Dentro da rede do Docker o banco é acessado pelo nome do serviço, na porta interna.
-      ConnectionStrings__Padrao: "Host=db;Port=5432;Database=transferencias_financeiras;Username=transferencias;Password=424659"
+      # Para usar outro banco (ex.: um PostgreSQL instalado na máquina), defina CONEXAO_BANCO num arquivo .env.
+      ConnectionStrings__Padrao: "${CONEXAO_BANCO:-Host=db;Port=5432;Database=transferencias_financeiras;Username=transferencias;Password=424659}"
     ports:
       - "5080:8080"
     depends_on:

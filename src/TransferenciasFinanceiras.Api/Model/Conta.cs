@@ -103,6 +103,10 @@ public class Conta : Entidade
         }
     }
 
+    public void Bloquear() => Status = StatusConta.Bloqueada;
+
+    public void Ativar() => Status = StatusConta.Ativa;
+
     public void Debitar(decimal valor)
     {
         GarantirQuePodeMovimentar();

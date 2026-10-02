@@ -8,9 +8,23 @@ public class TransferenciaConfiguracao : IEntityTypeConfiguration<Transferencia>
 {
     public void Configure(EntityTypeBuilder<Transferencia> construtor)
     {
-        construtor.ToTable("Transferencias");
+        construtor.ToTable("Transferencias", tabela =>
+        {
+            tabela.HasCheckConstraint("CK_Transferencias_Valor_Positivo", "\"Valor\" > 0");
+            tabela.HasCheckConstraint("CK_Transferencias_Contas_Diferentes", "\"IdContaOrigem\" <> \"IdContaDestino\"");
+        });
 
         construtor.HasKey(t => t.Id);
+
+        construtor.HasOne<Conta>()
+            .WithMany()
+            .HasForeignKey(t => t.IdContaOrigem)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        construtor.HasOne<Conta>()
+            .WithMany()
+            .HasForeignKey(t => t.IdContaDestino)
+            .OnDelete(DeleteBehavior.Restrict);
 
         construtor.Property(t => t.Valor).HasColumnType("decimal(18,2)");
 

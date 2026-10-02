@@ -16,6 +16,7 @@ export function PainelConta() {
     limiteChequeEspecial: 500
   });
   const [criando, setCriando] = useState(false);
+  const [alterandoStatus, setAlterandoStatus] = useState(false);
 
   async function aoConsultar(e: React.FormEvent) {
     e.preventDefault();
@@ -44,6 +45,20 @@ export function PainelConta() {
       setErro(err instanceof ErroApi ? err.message : "Falha ao criar a conta.");
     } finally {
       setCriando(false);
+    }
+  }
+
+  async function aoAlternarBloqueio(atual: Conta) {
+    setErro(null);
+    setAlterandoStatus(true);
+    try {
+      const resultado =
+        atual.status === "Ativa" ? await api.bloquearConta(atual.id) : await api.desbloquearConta(atual.id);
+      setConta(resultado);
+    } catch (err) {
+      setErro(err instanceof ErroApi ? err.message : "Falha ao alterar o status da conta.");
+    } finally {
+      setAlterandoStatus(false);
     }
   }
 
@@ -101,29 +116,39 @@ export function PainelConta() {
       {erro && <p className="erro">{erro}</p>}
 
       {conta && (
-        <dl className="detalhes">
-          <dt>ID</dt>
-          <dd>
-            <code>{conta.id}</code>
-          </dd>
-          <dt>Titular</dt>
-          <dd>{conta.nomeTitular}</dd>
-          <dt>Status</dt>
-          <dd>
-            <span className={`etiqueta etiqueta-${classeStatus(conta.status)}`}>{rotulosStatus[conta.status]}</span>
-          </dd>
-          <dt>Saldo</dt>
-          <dd>{moeda.format(conta.saldo)}</dd>
-          <dt>Cheque especial</dt>
-          <dd>{moeda.format(conta.limiteChequeEspecial)}</dd>
-          <dt>Disponível para transferir</dt>
-          <dd>{moeda.format(conta.saldoDisponivel)}</dd>
-          <dt>Limite dia / noite</dt>
-          <dd>
-            {moeda.format(conta.limiteTransferenciaDiurno)} ({conta.maxTentativasPorHoraDiurno} tentativas) /{" "}
-            {moeda.format(conta.limiteTransferenciaNoturno)} ({conta.maxTentativasPorHoraNoturno} tentativas)
-          </dd>
-        </dl>
+        <>
+          <dl className="detalhes">
+            <dt>ID</dt>
+            <dd>
+              <code>{conta.id}</code>
+            </dd>
+            <dt>Titular</dt>
+            <dd>{conta.nomeTitular}</dd>
+            <dt>Status</dt>
+            <dd>
+              <span className={`etiqueta etiqueta-${classeStatus(conta.status)}`}>{rotulosStatus[conta.status]}</span>
+            </dd>
+            <dt>Saldo</dt>
+            <dd>{moeda.format(conta.saldo)}</dd>
+            <dt>Cheque especial</dt>
+            <dd>{moeda.format(conta.limiteChequeEspecial)}</dd>
+            <dt>Disponível para transferir</dt>
+            <dd>{moeda.format(conta.saldoDisponivel)}</dd>
+            <dt>Limite dia / noite</dt>
+            <dd>
+              {moeda.format(conta.limiteTransferenciaDiurno)} ({conta.maxTentativasPorHoraDiurno} tentativas) /{" "}
+              {moeda.format(conta.limiteTransferenciaNoturno)} ({conta.maxTentativasPorHoraNoturno} tentativas)
+            </dd>
+          </dl>
+          <button
+            type="button"
+            className={conta.status === "Ativa" ? "perigo" : undefined}
+            disabled={alterandoStatus}
+            onClick={() => aoAlternarBloqueio(conta)}
+          >
+            {conta.status === "Ativa" ? "Bloquear conta" : "Desbloquear conta"}
+          </button>
+        </>
       )}
     </section>
   );

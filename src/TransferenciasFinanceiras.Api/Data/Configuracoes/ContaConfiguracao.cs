@@ -8,7 +8,11 @@ public class ContaConfiguracao : IEntityTypeConfiguration<Conta>
 {
     public void Configure(EntityTypeBuilder<Conta> construtor)
     {
-        construtor.ToTable("Contas");
+        construtor.ToTable("Contas", tabela =>
+        {
+            tabela.HasCheckConstraint("CK_Contas_LimiteChequeEspecial_NaoNegativo", "\"LimiteChequeEspecial\" >= 0");
+            tabela.HasCheckConstraint("CK_Contas_Saldo_DentroDoChequeEspecial", "\"Saldo\" >= -\"LimiteChequeEspecial\"");
+        });
 
         construtor.HasKey(c => c.Id);
 

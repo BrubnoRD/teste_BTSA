@@ -49,4 +49,34 @@ public class TransferenciaTestes
 
         Assert.Throws<TransferenciaNaoCancelavelExcecao>(transferencia.Cancelar);
     }
+
+    [Fact]
+    public void Finalizar_TransferenciaQueNaoEstaEmProcessamento_Lanca()
+    {
+        var agendada = Transferencia.CriarAgendada(Origem, Destino, 10m, Agora.AddDays(1), Agora);
+
+        Assert.Throws<InvalidOperationException>(() => agendada.MarcarComoConcluida(Agora));
+        Assert.Throws<InvalidOperationException>(() => agendada.MarcarComoFalha(Agora, "motivo"));
+        Assert.Equal(StatusTransferencia.Scheduled, agendada.Status);
+    }
+
+    [Fact]
+    public void Concluir_TransferenciaCancelada_Lanca()
+    {
+        var cancelada = Transferencia.CriarAgendada(Origem, Destino, 10m, Agora.AddDays(1), Agora);
+        cancelada.Cancelar();
+
+        Assert.Throws<InvalidOperationException>(() => cancelada.MarcarComoConcluida(Agora));
+        Assert.Equal(StatusTransferencia.Cancelled, cancelada.Status);
+    }
+
+    [Fact]
+    public void MarcarComoFalha_TransferenciaJaConcluida_Lanca()
+    {
+        var concluida = Transferencia.CriarImediata(Origem, Destino, 10m, Agora);
+        concluida.MarcarComoConcluida(Agora);
+
+        Assert.Throws<InvalidOperationException>(() => concluida.MarcarComoFalha(Agora, "motivo"));
+        Assert.Equal(StatusTransferencia.Completed, concluida.Status);
+    }
 }

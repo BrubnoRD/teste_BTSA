@@ -23,4 +23,20 @@ public class ContasController(IContaServico contaServico) : ControllerBase
         var resultado = await contaServico.CriarAsync(requisicao, ct);
         return CreatedAtAction(nameof(ObterPorId), new { id = resultado.Id }, resultado);
     }
+
+    [HttpPost("{id:guid}/block")]
+    [ProducesResponseType(typeof(ContaResposta), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ContaResposta>> Bloquear(Guid id, CancellationToken ct)
+    {
+        var resultado = await contaServico.BloquearAsync(id, ct);
+        return Ok(resultado);
+    }
+
+    [HttpPost("{id:guid}/unblock")]
+    [ProducesResponseType(typeof(ContaResposta), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ContaResposta>> Ativar(Guid id, CancellationToken ct)
+    {
+        var resultado = await contaServico.AtivarAsync(id, ct);
+        return Ok(resultado);
+    }
 }

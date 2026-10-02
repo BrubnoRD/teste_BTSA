@@ -89,6 +89,51 @@ public class TransferenciaServicoTestes
     }
 
     [Fact]
+    public async Task Imediata_OrigemBloqueada_FalhaSemMoverDinheiro()
+    {
+        var origem = NovaConta(saldo: 100m);
+        var destino = NovaConta();
+        await new ContaServico(_contas, new UnidadeDeTrabalhoEmMemoria(), _relogio).BloquearAsync(origem.Id);
+
+        var resultado = await Transferir(origem, destino, 10m);
+
+        Assert.Equal(StatusTransferencia.Failed, resultado.Status);
+        Assert.Contains("origem", resultado.MotivoFalha);
+        Assert.Equal(100m, origem.Saldo);
+        Assert.Equal(0m, destino.Saldo);
+    }
+
+    [Fact]
+    public async Task Imediata_DestinoBloqueado_FalhaSemMoverDinheiro()
+    {
+        var origem = NovaConta(saldo: 100m);
+        var destino = NovaConta();
+        await new ContaServico(_contas, new UnidadeDeTrabalhoEmMemoria(), _relogio).BloquearAsync(destino.Id);
+
+        var resultado = await Transferir(origem, destino, 10m);
+
+        Assert.Equal(StatusTransferencia.Failed, resultado.Status);
+        Assert.Contains("destino", resultado.MotivoFalha);
+        Assert.Equal(100m, origem.Saldo);
+        Assert.Equal(0m, destino.Saldo);
+    }
+
+    [Fact]
+    public async Task ExecutarAgendada_ContaBloqueadaDepoisDoAgendamento_Falha()
+    {
+        var origem = NovaConta(saldo: 100m);
+        var destino = NovaConta();
+        var agendada = await _servico.AgendarAsync(new AgendarTransferenciaRequisicao(origem.Id, destino.Id, 50m, MeioDiaBrasilia.AddHours(1)));
+
+        origem.Bloquear();
+        _relogio.Avancar(TimeSpan.FromHours(1));
+        await _servico.ExecutarAgendadaAsync(agendada.Id);
+
+        Assert.Equal(StatusTransferencia.Failed, (await _servico.ObterAsync(agendada.Id)).Status);
+        Assert.Equal(100m, origem.Saldo);
+    }
+
+    [Fact]
     public async Task LimiteDeTentativasPorHora_ContaTambemAsTentativasRejeitadas()
     {
         var origem = NovaConta(saldo: 10m, tentativasDiurno: 2);

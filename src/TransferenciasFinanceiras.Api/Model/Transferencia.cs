@@ -78,6 +78,8 @@ public class Transferencia : Entidade
 
     public void MarcarComoConcluida(DateTime processadaEm)
     {
+        GarantirQueEstaProcessando();
+
         Status = StatusTransferencia.Completed;
         ProcessadaEm = processadaEm;
         MotivoFalha = null;
@@ -85,9 +87,19 @@ public class Transferencia : Entidade
 
     public void MarcarComoFalha(DateTime processadaEm, string motivo)
     {
+        GarantirQueEstaProcessando();
+
         Status = StatusTransferencia.Failed;
         ProcessadaEm = processadaEm;
         MotivoFalha = motivo;
+    }
+
+    private void GarantirQueEstaProcessando()
+    {
+        if (Status != StatusTransferencia.Processing)
+        {
+            throw new InvalidOperationException($"Só é possível finalizar uma transferência em processamento. Status atual: {Status}.");
+        }
     }
 
     public void Cancelar()

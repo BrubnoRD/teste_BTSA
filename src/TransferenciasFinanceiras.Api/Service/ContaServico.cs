@@ -30,4 +30,21 @@ public sealed class ContaServico(IContaRepositorio contas, IUnidadeDeTrabalho un
 
         return ContaResposta.DoDominio(conta);
     }
+
+    public Task<ContaResposta> BloquearAsync(Guid id, CancellationToken ct = default) =>
+        AlterarStatusAsync(id, conta => conta.Bloquear(), ct);
+
+    public Task<ContaResposta> AtivarAsync(Guid id, CancellationToken ct = default) =>
+        AlterarStatusAsync(id, conta => conta.Ativar(), ct);
+
+    private Task<ContaResposta> AlterarStatusAsync(Guid id, Action<Conta> alteracao, CancellationToken ct) =>
+        unidadeDeTrabalho.ExecutarEmTransacaoAsync(async token =>
+        {
+            var conta = await contas.ObterParaAtualizacaoAsync(id, token) ?? throw new ContaNaoEncontradaExcecao(id);
+
+            alteracao(conta);
+            await unidadeDeTrabalho.SalvarAlteracoesAsync(token);
+
+            return ContaResposta.DoDominio(conta);
+        }, ct);
 }

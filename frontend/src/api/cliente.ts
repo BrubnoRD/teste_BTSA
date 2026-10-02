@@ -50,6 +50,10 @@ export const api = {
   criarConta: (dados: DadosCriarConta) =>
     requisitar<Conta>(`/api/accounts`, { method: "POST", body: JSON.stringify(dados) }),
 
+  bloquearConta: (id: string) => requisitar<Conta>(`/api/accounts/${id}/block`, { method: "POST" }),
+
+  desbloquearConta: (id: string) => requisitar<Conta>(`/api/accounts/${id}/unblock`, { method: "POST" }),
+
   criarTransferencia: (dados: DadosCriarTransferencia) =>
     requisitar<Transferencia>(`/api/transfers`, { method: "POST", body: JSON.stringify(dados) }),
 
