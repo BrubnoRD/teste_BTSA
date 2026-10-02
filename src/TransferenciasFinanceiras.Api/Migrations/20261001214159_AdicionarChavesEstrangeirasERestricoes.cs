@@ -4,10 +4,8 @@
 
 namespace TransferenciasFinanceiras.Api.Migrations
 {
-    /// <inheritdoc />
     public partial class AdicionarChavesEstrangeirasERestricoes : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddCheckConstraint(
@@ -47,7 +45,6 @@ namespace TransferenciasFinanceiras.Api.Migrations
                 onDelete: ReferentialAction.Restrict);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

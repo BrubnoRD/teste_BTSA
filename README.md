@@ -101,9 +101,9 @@ Foram deixados de fora combinadamente para esta entrega (são diferenciais expli
 
 ## Como rodar
 
-### Com Docker (banco + API + tela)
+### Com Docker (API + tela)
 
-Pré-requisito: **Docker Desktop**. A partir da raiz do repositório:
+Pré-requisitos: **Docker Desktop** e um **PostgreSQL** instalado na máquina em `localhost:5432` (usuário `postgres` / senha `postgres`, o mesmo do `appsettings.json`). A partir da raiz do repositório:
 
 ```powershell
 docker compose up -d --build
@@ -113,11 +113,7 @@ docker compose up -d --build
 |---|---|
 | API (Swagger) | `http://localhost:5080/swagger` |
 | Tela | `http://localhost:5173` |
-| PostgreSQL | `localhost:5433` (usuário `transferencias` / senha `424659`) |
-
-O `docker-compose.yml` sobe três contêineres: `db` (PostgreSQL 16), `api` (build de `src/TransferenciasFinanceiras.Api/Dockerfile`, só inicia depois que o banco está saudável e aplica as migrações sozinha) e `frontend` (build do Vite servido pelo nginx, a partir de `frontend/Dockerfile`). Para parar: `docker compose down` (os dados continuam no volume `pg_data`; use `docker compose down -v` para apagá-los).
-
-> Para a API do Docker usar um PostgreSQL já instalado na máquina, em vez do contêiner `db`, crie um arquivo `.env` na raiz com `CONEXAO_BANCO=Host=host.docker.internal;Port=5432;Database=transferencias_financeiras;Username=postgres;Password=postgres` e rode `docker compose up -d api`.
+O `docker-compose.yml` sobe dois contêineres: `api` (build de `src/TransferenciasFinanceiras.Api/Dockerfile`, conecta no PostgreSQL da máquina host via `host.docker.internal:5432` e aplica as migrações sozinha) e `frontend` (build do Vite servido pelo nginx, a partir de `frontend/Dockerfile`). Para parar: `docker compose down`.
 
 > Os contêineres `api` e `frontend` usam as mesmas portas (5080 e 5173) que a execução pelo Visual Studio ou `dotnet run`/`npm run dev`. Para rodar fora do Docker, pare-os antes com `docker compose stop api frontend`.
 
@@ -126,14 +122,6 @@ O `docker-compose.yml` sobe três contêineres: `db` (PostgreSQL 16), `api` (bui
 Pré-requisitos: **.NET 8 SDK** e um **PostgreSQL** acessível.
 
 A string de conexão padrão (`ConnectionStrings:Padrao` em `src/TransferenciasFinanceiras.Api/appsettings.json`) aponta para um PostgreSQL instalado localmente: `localhost:5432`, usuário `postgres` / senha `postgres`. O banco `transferencias_financeiras` não precisa existir — a API cria o banco e as tabelas ao iniciar.
-
-Sem PostgreSQL instalado, dá para subir só o banco pelo **Docker Desktop** (PostgreSQL 16 na porta `5433`, usuário `transferencias` / senha `424659`):
-
-```powershell
-docker compose up -d db
-```
-
-Nesse caso, troque a string de conexão para `Host=localhost;Port=5433;Database=transferencias_financeiras;Username=transferencias;Password=424659`.
 
 ```powershell
 # a partir da raiz do repositório

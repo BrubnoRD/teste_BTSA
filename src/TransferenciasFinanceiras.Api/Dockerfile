@@ -1,10 +1,6 @@
-# API de Transferências Financeiras (.NET 8).
-# Construída pelo docker-compose.yml da raiz: docker compose up -d --build
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Restaura primeiro só com o .csproj para aproveitar o cache das camadas quando apenas o código muda.
 COPY TransferenciasFinanceiras.Api.csproj ./
 RUN dotnet restore
 
